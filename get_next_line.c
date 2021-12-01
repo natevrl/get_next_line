@@ -3,7 +3,7 @@
 #include "../42-libft/libft.h"
 #include <stdlib.h>
 
-# define BUFFER_SIZE 8
+# define BUFFER_SIZE 6
 
 int	ftstrlen(char *str)
 {
@@ -45,12 +45,23 @@ char *join_all(int fd)
 	char *tmp;
 	char *str;
 	int i = 0;
+	int read_return;
 
 	tmp = "";
-	read(fd, buffer, BUFFER_SIZE);
-	tmp = ft_strjoin(tmp, buffer);
-	if (!(str = malloc(sizeof(char) * ft_strlen(tmp) + 1)))
+	while ((read_return = read(fd, buffer, BUFFER_SIZE)) > 0)
+	{
+		buffer[read_return] = '\0';
+		printf("%c\n", buffer[read_return - 1]);
+		//printf("%d\n", read_return);
+		tmp = ft_strjoin(tmp, buffer);
+	}
+	//printf("%c\n", tmp[0]);
+	str = malloc(sizeof(char) * ft_strlen(tmp) + 1);
+	if (!str)
+	{
+		printf("alloc echouer ptain\n");
 		return (NULL);
+	}
 	while (tmp[i])
 	{
 		str[i] = tmp[i];
@@ -63,27 +74,45 @@ char *join_all(int fd)
 
 char *get_next_line(int fd)
 {
-	static char	*buffer;
+	char	*the_line;
 	char *str;
 	int i = 0;
+	int y = 0;
 
+	y += i;
 	str = join_all(fd);
-
-	while (str[i] != '\n' && str[i])
+	//printf("str ; %s\n", str);
+	while (str[i] != '\n' && str[i] != '\0')
+	{
 		i++;
-	buffer = ft_substr(str, 0, i);
-	
-	return buffer;
+		printf("ca rentre");
+	}
+
+	printf("i = %d\n", i);
+	the_line = ft_substr(str, y, i);
+	i++;
+	//free(str);
+	return (the_line);
 }
 
-
+int test()
+{
+	static int i = 0;
+	char str[] = "test1test1test1qqq";
+	while (str[i] != '1' && str[i])
+		i++;
+	i++;
+	printf("test111");
+	return i;
+}
 
 int main()
 {
 	int fd;
-	//char buf[BUF_SIZE + 1];
-	//int ret;
-	//int i = 0;
+	char *str;
+	//char *gnl;
+	//char *gnl2;
+	//char *gnl3;
 
 	fd = open("test.txt", O_RDONLY);
 	if (fd == -1)
@@ -91,17 +120,10 @@ int main()
 		ft_putstr_fd("open() error", 1);
 		return (0);
 	}
-	printf("%s\n", get_next_line(fd));
-	//printf("%s\n", join_all(fd));
+	str = join_all(fd);
+	printf("%s", str);
+	free(str);
+	//printf("%d\n", test());
 	
-	/*ret = read(fd, buf, BUF_SIZE);
-	buf[ret] = '\0';
-	while (buf[i] != '\n')
-	{
-		write(1, &buf[i], 1);
-		i++;
-	}
-	ft_putnbr_fd(ret, 1);
-	write(1, "\n", 1);*/
 	return (0);
 }
