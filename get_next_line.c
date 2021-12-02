@@ -3,7 +3,7 @@
 #include "../42-libft/libft.h"
 #include <stdlib.h>
 
-# define BUFFER_SIZE 6
+# define BUFFER_SIZE 10000000
 
 int	ftstrlen(char *str)
 {
@@ -46,7 +46,6 @@ char *get_next_line(int fd)
 		i++;
 
 	the_line = ft_substr(str, y, i - y + 1);
-	printf("%d\n", i);
 	return (the_line);
 }
 
@@ -81,6 +80,8 @@ int main()
 	//printf("%s", test(str));	
 	//printf("%s", test(str));	
 	//printf("%s", test(str));	
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
