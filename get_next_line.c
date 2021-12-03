@@ -3,7 +3,7 @@
 #include "../42-libft/libft.h"
 #include <stdlib.h>
 
-# define BUFFER_SIZE 100
+# define BUFFER_SIZE 1000000
 
 int	ftstrlen(char *str)
 {
@@ -31,12 +31,11 @@ char *get_next_line(int fd)
 	char buffer[BUFFER_SIZE];
 	char *new_line;
 	static char *tmp = "";
-	int read_return;
+	size_t read_return;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (tmp == NULL)
-		return NULL;
+	
 	while (!there_is_newline(tmp) && (read_return = read(fd, buffer, BUFFER_SIZE)))
 	{
 		buffer[read_return] = '\0';
@@ -50,15 +49,13 @@ char *get_next_line(int fd)
 	else
 	{
 		new_line = ft_substr(tmp, 0, ftstrlen(tmp));
-		tmp = "";
 	}
-	if (ftstrlen(tmp) == 0)
+	if (!read_return)
 	{
-		tmp = NULL;
-		free(tmp);
+		free(tmp);			
+		return NULL;
 	}
-	//if (!read_return)
-	//	return NULL;
+
 	return (new_line);
 }
 
