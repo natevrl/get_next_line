@@ -3,27 +3,7 @@
 #include "../42-libft/libft.h"
 #include <stdlib.h>
 
-# define BUFFER_SIZE 10
-
-int	ft_strcmp(char	*s1, char	*s2)
-{
-	while (*s1 && *s2)
-	{
-		if (*s1 == *s2)
-		{
-			s1++;
-			s2++;
-		}
-		else
-			break ;
-	}
-	if (*s1 > *s2)
-		return (1);
-	else if (*s2 == *s1)
-		return (0);
-	else
-		return (-1);
-}
+# define BUFFER_SIZE 100
 
 int	ftstrlen(char *str)
 {
@@ -34,7 +14,6 @@ int	ftstrlen(char *str)
 		i++;
 	return (i);
 }
-
 // fonction qui check si il y a un '\n' dans le buffer
 int there_is_newline(char *str)
 {
@@ -51,34 +30,35 @@ char *get_next_line(int fd)
 {
 	char buffer[BUFFER_SIZE];
 	char *new_line;
-	char *tmp;
-	static char *stock_after_newline = NULL;
+	static char *tmp = "";
 	int read_return;
 
-	if (BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (stock_after_newline[0] == "")
-		return (NULL);
-	if (stock_after_newline != NULL)
-		tmp = stock_after_newline;
-	else
-		tmp = "";
-	while ((read_return = read(fd, buffer, BUFFER_SIZE)) > 0)
+	if (tmp == NULL)
+		return NULL;
+	while (!there_is_newline(tmp) && (read_return = read(fd, buffer, BUFFER_SIZE)))
 	{
 		buffer[read_return] = '\0';
 		tmp = ft_strjoin(tmp, buffer);
-		if (there_is_newline(tmp))
-			break ;
 	}
 	if (there_is_newline(tmp))
 	{
-		//								STR		DEBUT 					SIZE TOTAL A COPIER
-		stock_after_newline = ft_substr(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
 		new_line = ft_substr(tmp, 0, there_is_newline(tmp) + 1);
+		tmp = ft_substr(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
 	}
 	else
+	{
 		new_line = ft_substr(tmp, 0, ftstrlen(tmp));
-	free(tmp);
+		tmp = "";
+	}
+	if (ftstrlen(tmp) == 0)
+	{
+		tmp = NULL;
+		free(tmp);
+	}
+	//if (!read_return)
+	//	return NULL;
 	return (new_line);
 }
 
@@ -99,9 +79,7 @@ int main()
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	//printf("%s", get_next_line(fd));
-	//printf("%s", get_next_line(fd));
+	free(get_next_line(fd));
 	return (0);
 }
 /*int    main()
