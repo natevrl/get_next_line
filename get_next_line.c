@@ -3,11 +3,11 @@
 #include "../42-libft/libft.h"
 #include <stdlib.h>
 
-# define BUFFER_SIZE 1000000
+# define BUFFER_SIZE 10
 
 int	ftstrlen(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -15,9 +15,9 @@ int	ftstrlen(char *str)
 	return (i);
 }
 // fonction qui check si il y a un '\n' dans le buffer
-int there_is_newline(char *str)
+int	there_is_newline(char *str)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	while (str[++i])
@@ -26,16 +26,15 @@ int there_is_newline(char *str)
 	return (0);
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
-	char buffer[BUFFER_SIZE];
-	char *new_line;
+	char		buffer[BUFFER_SIZE];
+	char		*new_line;
 	static char *tmp = "";
-	size_t read_return;
+	size_t	read_return;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (tmp == NULL || fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	
 	while (!there_is_newline(tmp) && (read_return = read(fd, buffer, BUFFER_SIZE)))
 	{
 		buffer[read_return] = '\0';
@@ -47,15 +46,14 @@ char *get_next_line(int fd)
 		tmp = ft_substr(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
 	}
 	else
-	{
 		new_line = ft_substr(tmp, 0, ftstrlen(tmp));
-	}
 	if (!read_return)
 	{
 		free(tmp);			
-		return NULL;
+		tmp = NULL;
+		if (new_line[0] == '\0')
+			return (NULL);
 	}
-
 	return (new_line);
 }
 
@@ -71,10 +69,6 @@ int main()
 		ft_putstr_fd("open() error", 1);
 		return (0);
 	}
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	free(get_next_line(fd));
 	return (0);
@@ -96,7 +90,6 @@ int main()
     while (str)
     {
         printf("Line %d = %s", i, str);
-        free(str);
         str = get_next_line(fd);
         i++;
     }
