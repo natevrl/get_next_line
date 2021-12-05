@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-# define BUFFER_SIZE 4
 
 size_t ftstrlen(char const *str)
 {
@@ -14,7 +13,7 @@ size_t ftstrlen(char const *str)
 	return (i);
 }
 
-char	*ftsubstr(char const *s, unsigned int start, size_t len)
+/*char	*ftsubstr(char const *s, unsigned int start, size_t len)
 {
 	size_t	i;
 	char	*new_str;
@@ -41,7 +40,8 @@ char	*ftsubstr(char const *s, unsigned int start, size_t len)
 	}
 	new_str[i] = '\0';
 	return (new_str);
-}
+}*/
+
 
 char	*ftstrdup(const char *src)
 
@@ -66,7 +66,30 @@ char	*ftstrdup(const char *src)
 	return (dest);
 }
 
-char	*ftstrjoin(char const *s1, char const *s2)
+char	*ftsubstr(char const *s, unsigned int start, size_t len)
+{
+	size_t	i;
+	char	*new_str;
+
+	if (!s)
+		return (NULL);
+	if ((size_t)start > ftstrlen(s))
+		return (ftstrdup(""));
+	if (len > ftstrlen(s) - start)
+		len = ftstrlen(s) - start;
+	new_str = malloc(sizeof(char) * (len + 1));
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		new_str[i] = s[start + i];
+		i++;
+	}
+	new_str[i] = '\0';
+	return (new_str);
+}
+char	*ftstrjoin(char *s1, char *s2)
 {
 	int		y;
 	int		i;
@@ -94,7 +117,7 @@ char	*ftstrjoin(char const *s1, char const *s2)
 		y++;
 	}
 	join[i] = '\0';
-	//free((char *)s1);
+	free(s1);
 	return (join);
 }
 
@@ -116,12 +139,10 @@ char	*get_next_line(int fd)
 {
 	char		buffer[BUFFER_SIZE + 1];
 	char		*new_line;
-	char 		*test;
+	char *tampon;
 	static char *tmp = NULL;
 	size_t	read_return;
 
-	if (!tmp)
-		tmp = ftstrdup("");
 	read_return = BUFFER_SIZE;
 	if (read(fd, buffer, 0) < 0 || fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
@@ -129,14 +150,14 @@ char	*get_next_line(int fd)
 	{
 		read_return = read(fd, buffer, BUFFER_SIZE);
 		buffer[read_return] = '\0';
-		test = tmp;
-		tmp = ftstrjoin(test, buffer);
-		free(test);
+		tmp = ftstrjoin(tmp, buffer);
 	}
 	if (there_is_newline(tmp))
 	{
 		new_line = ftsubstr(tmp, 0, there_is_newline(tmp) + 1);
-		tmp = ftsubstr(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
+		tampon = ftsubstr(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
+		free(tmp);
+		tmp = tampon;
 	}
 	else
 		new_line = ftsubstr(tmp, 0, ftstrlen(tmp));
@@ -153,7 +174,7 @@ char	*get_next_line(int fd)
 	return (new_line);
 }
 
-#include <stdio.h>
+//#include <stdio.h>
 /*int main()
 {
 	int fd;
@@ -173,7 +194,7 @@ char	*get_next_line(int fd)
 	free(get_next_line(fd));
 	return (0);
 }*/
-int    main()
+/*int    main()
 {
     int        i;
     int        fd;
@@ -197,4 +218,4 @@ int    main()
     free(str);
     close(fd);
     return (0);
-}
+}*/

@@ -6,14 +6,13 @@
 # include <unistd.h>
 
 char	*get_next_line(int fd);
-int		read_file(int fd, char **buffer, char **s_buff, char **line);
-char	*get_line(char **line, char **s_buff);
 
-size_t	ft_strlen(const char *s);
-char	*ft_strdup(const char *s1);
-char	*ft_strchr(const char *s, int c);
-char	*ft_strjoin(char const *s1, char const *s2);
-char	*ft_substr(char const *s, unsigned int start, size_t len);
+size_t	ftstrlen(const char *str);
+char	*ftstrdup(const char *s1);
+char	*ftstrdup(char const *src);
+char	*ftstrjoin(char const *s1, char const *s2);
+char	*ftsubstr(char const *s, unsigned int start, size_t len);
+int there_is_newline(char *str);
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1
