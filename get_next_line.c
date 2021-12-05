@@ -1,6 +1,5 @@
 #include <unistd.h>
 #include <fcntl.h>
-#include "../42-libft/libft.h"
 #include <stdlib.h>
 
 # define BUFFER_SIZE 4
@@ -77,8 +76,6 @@ char	*ftstrjoin(char const *s1, char const *s2)
 	
 	if (!s1)
 		s1 = ftstrdup("");
-	if (!s2)
-		s2 = ftstrdup("");
 	total_size = ftstrlen(s1) + ftstrlen(s2);
 	join = malloc(sizeof(char const) * total_size + 1);
 	if (join == NULL)
@@ -97,8 +94,7 @@ char	*ftstrjoin(char const *s1, char const *s2)
 		y++;
 	}
 	join[i] = '\0';
-	free((char *)s1);
-	free((char *)s2);
+	//free((char *)s1);
 	return (join);
 }
 
@@ -118,25 +114,24 @@ int	there_is_newline(char *str)
 
 char	*get_next_line(int fd)
 {
-	char		*buffer;
+	char		buffer[BUFFER_SIZE + 1];
 	char		*new_line;
+	char 		*test;
 	static char *tmp = NULL;
 	size_t	read_return;
 
+	if (!tmp)
+		tmp = ftstrdup("");
 	read_return = BUFFER_SIZE;
-	buffer = (char *) malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
+	if (read(fd, buffer, 0) < 0 || fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
-	if (read(fd, buffer, 0) < 0)
-	{
-		free(buffer);
-		return (NULL);
-	}
 	while (there_is_newline(tmp) == 0 && read_return > 0) 
 	{
 		read_return = read(fd, buffer, BUFFER_SIZE);
 		buffer[read_return] = '\0';
-		tmp = ftstrjoin(tmp, buffer);
+		test = tmp;
+		tmp = ftstrjoin(test, buffer);
+		free(test);
 	}
 	if (there_is_newline(tmp))
 	{
@@ -159,7 +154,7 @@ char	*get_next_line(int fd)
 }
 
 #include <stdio.h>
-int main()
+/*int main()
 {
 	int fd;
 	//char str[] = "qwer\ntyyy\nxxxx";
@@ -177,8 +172,8 @@ int main()
 	printf("%s", get_next_line(fd));
 	free(get_next_line(fd));
 	return (0);
-}
-/*int    main()
+}*/
+int    main()
 {
     int        i;
     int        fd;
@@ -202,4 +197,4 @@ int main()
     free(str);
     close(fd);
     return (0);
-}*/
+}
