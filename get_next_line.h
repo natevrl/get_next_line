@@ -7,12 +7,12 @@
 
 char	*get_next_line(int fd);
 
-size_t	ftstrlen(const char *str);
-char	*ftstrdup(const char *s1);
-char	*ftstrdup(char const *src);
-char	*ftstrjoin(char const *s1, char const *s2);
-char	*ftsubstr(char const *s, unsigned int start, size_t len);
+size_t	ftstrlen(char *str);
+char	*ftstrdup(char *src);
+char	*ftstrjoin(char *s1, char *s2);
+char	*after_newline(char *str);
 int there_is_newline(char *str);
+char	*before_newline(char *str);
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1
