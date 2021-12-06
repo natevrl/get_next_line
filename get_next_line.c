@@ -1,9 +1,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include "../42-libft/libft.h"
 
+# define BUFFER_SIZE 42
 
-size_t ftstrlen(char const *str)
+size_t ftstrlen(char *str)
 {
 	size_t	i;
 
@@ -43,7 +45,7 @@ size_t ftstrlen(char const *str)
 }*/
 
 
-char	*ftstrdup(const char *src)
+char	*ftstrdup(char *src)
 
 {
 	int		i;
@@ -66,7 +68,24 @@ char	*ftstrdup(const char *src)
 	return (dest);
 }
 
-char	*ftsubstr(char const *s, unsigned int start, size_t len)
+// fonction qui check si il y a un '\n' dans le buffer
+int	there_is_newline(char *str)
+{
+	int	i;
+
+	i = -1;
+	if (!str)
+		return (0);
+	if (str[0] == '\n')
+		return (1);
+	while (str[++i])
+		if (str[i] == '\n')
+			return (i);
+	return (0);
+}
+
+
+char	*ftsubstr(char *s, unsigned int start, size_t len)
 {
 	size_t	i;
 	char	*new_str;
@@ -89,6 +108,39 @@ char	*ftsubstr(char const *s, unsigned int start, size_t len)
 	new_str[i] = '\0';
 	return (new_str);
 }
+
+char	*after_newline(char *s, unsigned int start, size_t len)
+{
+	size_t	i;
+	char	*new_str;
+
+	
+	i = 0;
+	if (!s)
+		return (NULL);
+	if ((size_t)start > ftstrlen(s))
+		return (ftstrdup(""));
+	if (len > ftstrlen(s) - start)
+		len = ftstrlen(s) - start;
+	if (there_is_newline(s) == 1)
+	{
+		i++
+	}
+	new_str = malloc(sizeof(char) * (len + 1));
+	if (!new_str)
+		return (NULL);
+	while (i < len)
+	{
+		new_str[i] = s[start + i];
+		i++;
+	}
+	new_str[i] = '\0';
+	free(s);
+	return (new_str);
+}
+
+
+
 char	*ftstrjoin(char *s1, char *s2)
 {
 	int		y;
@@ -100,7 +152,7 @@ char	*ftstrjoin(char *s1, char *s2)
 	if (!s1)
 		s1 = ftstrdup("");
 	total_size = ftstrlen(s1) + ftstrlen(s2);
-	join = malloc(sizeof(char const) * total_size + 1);
+	join = malloc(sizeof(char) * total_size + 1);
 	if (join == NULL)
 		return (NULL);
 	i = 0;
@@ -121,25 +173,10 @@ char	*ftstrjoin(char *s1, char *s2)
 	return (join);
 }
 
-// fonction qui check si il y a un '\n' dans le buffer
-int	there_is_newline(char *str)
-{
-	int	i;
-
-	i = -1;
-	if (!str)
-		return (0);
-	while (str[++i])
-		if (str[i] == '\n')
-			return (i);
-	return (0);
-}
-
 char	*get_next_line(int fd)
 {
 	char		buffer[BUFFER_SIZE + 1];
 	char		*new_line;
-	char *tampon;
 	static char *tmp = NULL;
 	size_t	read_return;
 
@@ -154,10 +191,8 @@ char	*get_next_line(int fd)
 	}
 	if (there_is_newline(tmp))
 	{
-		new_line = ftsubstr(tmp, 0, there_is_newline(tmp) + 1);
-		tampon = ftsubstr(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
-		free(tmp);
-		tmp = tampon;
+		new_line = ftsubstr(tmp, 0, there_is_newline(tmp));
+		tmp = after_newline(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
 	}
 	else
 		new_line = ftsubstr(tmp, 0, ftstrlen(tmp));
@@ -174,8 +209,8 @@ char	*get_next_line(int fd)
 	return (new_line);
 }
 
-//#include <stdio.h>
-/*int main()
+#include <stdio.h>
+int main()
 {
 	int fd;
 	//char str[] = "qwer\ntyyy\nxxxx";
@@ -191,9 +226,10 @@ char	*get_next_line(int fd)
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
 	free(get_next_line(fd));
 	return (0);
-}*/
+}
 /*int    main()
 {
     int        i;
