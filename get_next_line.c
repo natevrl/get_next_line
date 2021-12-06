@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "../42-libft/libft.h"
 
-# define BUFFER_SIZE 42
+//# define BUFFER_SIZE 42
 
 size_t ftstrlen(char *str)
 {
@@ -14,36 +14,6 @@ size_t ftstrlen(char *str)
 		i++;
 	return (i);
 }
-
-/*char	*ftsubstr(char const *s, unsigned int start, size_t len)
-{
-	size_t	i;
-	char	*new_str;
-
-	if (!s)
-		return (NULL);
-	if ((size_t)start > ftstrlen(s))
-	{
-		new_str = malloc(sizeof(char) * 1);
-		if (!new_str)
-			return (NULL);
-		new_str[0] = '\0';
-		return (new_str);
-	}
-	new_str = malloc(sizeof(char) * len + 1);
-	if (!new_str)
-		return (NULL);
-	i = 0;
-	while (i < len)
-	{
-		new_str[i] = s[start];
-		start++;
-		i++;
-	}
-	new_str[i] = '\0';
-	return (new_str);
-}*/
-
 
 char	*ftstrdup(char *src)
 
@@ -73,73 +43,69 @@ int	there_is_newline(char *str)
 {
 	int	i;
 
-	i = -1;
+	i = 0;
 	if (!str)
 		return (0);
 	if (str[0] == '\n')
 		return (1);
-	while (str[++i])
+	while (str[i])
+	{
 		if (str[i] == '\n')
 			return (i);
+		i++;
+	}
 	return (0);
 }
 
 
-char	*ftsubstr(char *s, unsigned int start, size_t len)
+char	*ftsubstr(char *s)
 {
-	size_t	i;
+	int	i;
 	char	*new_str;
 
 	if (!s)
 		return (NULL);
-	if ((size_t)start > ftstrlen(s))
-		return (ftstrdup(""));
-	if (len > ftstrlen(s) - start)
-		len = ftstrlen(s) - start;
-	new_str = malloc(sizeof(char) * (len + 1));
+	if (s[0] == '\n')
+		return (ftstrdup("\n"));
+	i = 0;
+	while (s[i] && s[i] != '\n')
+		i++;
+	new_str = malloc(sizeof(char) * (i + 2));
 	if (!new_str)
 		return (NULL);
 	i = 0;
-	while (i < len)
+	while (s[i])
 	{
-		new_str[i] = s[start + i];
+		new_str[i] = s[i];
 		i++;
+		if (i > 0 && s[i - 1] == '\n')
+			break ;
 	}
 	new_str[i] = '\0';
+
 	return (new_str);
 }
 
-char	*after_newline(char *s, unsigned int start, size_t len)
+char	*after_newline(char *s)
 {
-	size_t	i;
+	int	i;
+	int 	y;
 	char	*new_str;
 
 	
 	i = 0;
-	if (!s)
-		return (NULL);
-	if ((size_t)start > ftstrlen(s))
-		return (ftstrdup(""));
-	if (len > ftstrlen(s) - start)
-		len = ftstrlen(s) - start;
-	if (there_is_newline(s) == 1)
-	{
-		i++
-	}
-	new_str = malloc(sizeof(char) * (len + 1));
+	while (s && s[i] && s[i] != '\n')
+		i++;
+	new_str = malloc(sizeof(char) * (ftstrlen(s) - i + 1));
 	if (!new_str)
 		return (NULL);
-	while (i < len)
-	{
-		new_str[i] = s[start + i];
-		i++;
-	}
-	new_str[i] = '\0';
+	y = 0;
+	while (s && s[i])
+		new_str[y++] = s[++i];
+	new_str[y] = '\0';
 	free(s);
 	return (new_str);
 }
-
-
 
 char	*ftstrjoin(char *s1, char *s2)
 {
@@ -183,33 +149,25 @@ char	*get_next_line(int fd)
 	read_return = BUFFER_SIZE;
 	if (read(fd, buffer, 0) < 0 || fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
-	while (there_is_newline(tmp) == 0 && read_return > 0) 
+	while (!there_is_newline(tmp) && read_return > 0) 
 	{
-		read_return = read(fd, buffer, BUFFER_SIZE);
+		read_return = read(fd, &buffer, BUFFER_SIZE);
 		buffer[read_return] = '\0';
 		tmp = ftstrjoin(tmp, buffer);
 	}
-	if (there_is_newline(tmp))
+	new_line = ftsubstr(tmp);
+	tmp = after_newline(tmp);
+	if (!read_return && ftstrlen(tmp) == 0 && ftstrlen(new_line) == 0)
 	{
-		new_line = ftsubstr(tmp, 0, there_is_newline(tmp));
-		tmp = after_newline(tmp, there_is_newline(tmp) + 1, ftstrlen(tmp) - (there_is_newline(tmp) + 1));
-	}
-	else
-		new_line = ftsubstr(tmp, 0, ftstrlen(tmp));
-	if (!read_return)
-	{
-		free(tmp);			
+		free(tmp);
 		tmp = NULL;
-		if (new_line[0] == '\0')
-		{
-			free(new_line);
-			return (NULL);
-		}
+		free(new_line);
+		return (NULL);
 	}
 	return (new_line);
 }
 
-#include <stdio.h>
+/*#include <stdio.h>
 int main()
 {
 	int fd;
@@ -229,7 +187,7 @@ int main()
 	printf("%s", get_next_line(fd));
 	free(get_next_line(fd));
 	return (0);
-}
+}*/
 /*int    main()
 {
     int        i;
