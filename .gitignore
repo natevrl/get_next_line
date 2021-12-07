@@ -1,0 +1,7 @@
+a.out
+test.txt
+*.gch
+DS_Store
+gnlTester/
+main.c
+*.swp
